@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import mx.edu.backendacademico.domain.EstatusAlumno;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1/alumnos")
@@ -27,7 +29,9 @@ public class AlumnoController {
 
     // GET consulta sin solicitar cambios de estado de negocio.
     @GetMapping
-    public List<AlumnoResponse> listar() { return service.listar().stream().map(AlumnoMapper::toResponse).toList(); }
+    public List<AlumnoResponse> listar(@RequestParam(name = "estatus", required = false) EstatusAlumno estatus) {
+        return service.listar().stream().filter(alumno -> estatus == null || alumno.estatus() == estatus).map(AlumnoMapper::toResponse).toList();
+    }
 
     // GET consulta sin solicitar cambios de estado de negocio.
     @GetMapping("/{id}")

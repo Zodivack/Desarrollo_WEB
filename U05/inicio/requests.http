@@ -20,3 +20,15 @@ Content-Type: application/json
 
 ### Eliminar alumno: 204
 DELETE {{baseUrl}}/alumnos/1
+
+### Listar todos los alumnos, sin filtro
+GET {{baseUrl}}/alumnos
+Accept: application/json
+
+### Listar solamente alumnos activos
+GET {{baseUrl}}/alumnos?estatus=ACTIVO
+Accept: application/json
+
+### Listar solamente alumnos dados de baja
+GET {{baseUrl}}/alumnos?estatus=BAJA
+Accept: application/json
