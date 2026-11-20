@@ -26,15 +26,33 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex, HttpHeaders headers,
-            HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         var detalle = problema(HttpStatus.BAD_REQUEST, "DATOS_INVALIDOS", "Revisa los campos indicados");
         // Conserva varios errores de un campo sin publicar el valor rechazado.
-        List<CampoInvalido> campos = ex.getBindingResult().getFieldErrors().stream()
-            .map(e -> new CampoInvalido(e.getField(), e.getDefaultMessage())).toList();
+        List<CampoInvalido> campos = ex.getBindingResult().getFieldErrors().stream().map(e -> new CampoInvalido(e.getField(), e.getDefaultMessage())).toList();
         detalle.setProperty("campos", campos);
         return handleExceptionInternal(ex, detalle, headers, status, request);
+    }
+
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    ProblemDetail integridad(org.springframework.dao.DataIntegrityViolationException ex) {
+        Throwable causa = ex;
+        while (causa != null) {
+            if (causa instanceof org.hibernate.exception.ConstraintViolationException restriccion) {
+                String nombre = restriccion.getConstraintName();
+                if ("fk_inscripcion_alumno".equalsIgnoreCase(nombre) || "fk_inscripcion_materia".equalsIgnoreCase(nombre)) {
+                    return problema(HttpStatus.CONFLICT, "RECURSO_REFERENCIADO", "El recurso participa en una inscripción y no puede eliminarse");
+                }
+            }
+            causa = causa.getCause();
+        }
+        return inesperado(ex);
+    }
+
+    @ExceptionHandler(OperacionAcademicaException.class)
+    ProblemDetail academica(OperacionAcademicaException ex) {
+        var status = ex.getCodigo().equals("MATERIA_NO_ENCONTRADA") ? HttpStatus.NOT_FOUND : HttpStatus.CONFLICT;
+        return problema(status, ex.getCodigo(), ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
