@@ -8,6 +8,7 @@ import mx.edu.backendacademico.service.InscripcionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -40,5 +41,11 @@ class PostgresIntegrationTest {
         var llena = assertThrows(OperacionAcademicaException.class, () -> servicio.inscribir(b.getId(), materia.getId()));
         assertEquals("SIN_CUPO", llena.getCodigo());
         assertEquals(1, inscripciones.countByMateriaId(materia.getId()));
+    }
+
+    @Test void rechazaMatriculasDuplicadasEnPostgres() {
+        alumnos.saveAndFlush(new AlumnoEntity(new Alumno(null, "DUP01", "Ada", "ada@u.mx", EstatusAlumno.ACTIVO)));
+        var error = assertThrows(DataIntegrityViolationException.class, () -> alumnos.saveAndFlush(new AlumnoEntity(new Alumno(null, "DUP01", "Grace", "grace@u.mx", EstatusAlumno.ACTIVO))));
+        assertTrue(error.getMostSpecificCause().getMessage().contains("uk_alumnos_matricula"), "La violación debe corresponder a la restricción uk_alumnos_matricula");
     }
 }
