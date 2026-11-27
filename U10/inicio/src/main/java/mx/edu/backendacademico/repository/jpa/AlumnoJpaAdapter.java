@@ -16,23 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AlumnoJpaAdapter implements AlumnoRepository {
     private final AlumnoSpringDataRepository repository;
-
-    public AlumnoJpaAdapter(AlumnoSpringDataRepository repository) {
-        this.repository = repository;
-    }
-
+    public AlumnoJpaAdapter(AlumnoSpringDataRepository repository) {this.repository = repository;}
     @Override
     @Transactional
     public Alumno guardar(Alumno alumno) {
         try {
-            // Flush envía SQL antes de abandonar este método y permite traducir el conflicto.
             return repository.saveAndFlush(new AlumnoEntity(alumno)).toDomain();
         } catch (DataIntegrityViolationException ex) {
-            // Traduce únicamente la restricción conocida; otras fallas conservan su causa.
             Throwable causa = ex;
             while (causa != null) {
-                if (causa instanceof ConstraintViolationException restriccion &&
-                    "uk_alumnos_matricula".equalsIgnoreCase(restriccion.getConstraintName())) {
+                if (causa instanceof ConstraintViolationException restriccion && "uk_alumnos_matricula".equalsIgnoreCase(restriccion.getConstraintName())) {
                     throw new MatriculaDuplicadaException(alumno.matricula());
                 }
                 causa = causa.getCause();
@@ -42,24 +35,18 @@ public class AlumnoJpaAdapter implements AlumnoRepository {
     }
 
     @Override
-    public List<Alumno> buscarTodos() {
-        // Este listado didáctico se limita a conjuntos pequeños de alumnos.
-        return repository.findAll().stream().map(AlumnoEntity::toDomain).toList();
-    }
+    public List<Alumno> buscarTodos() {return repository.findAll().stream().map(AlumnoEntity::toDomain).toList();}
 
     @Override
-    public Optional<Alumno> buscarPorId(Long id) {
-        return repository.findById(id).map(AlumnoEntity::toDomain);
-    }
+    public Optional<Alumno> buscarPorId(Long id) {return repository.findById(id).map(AlumnoEntity::toDomain);}
 
     @Override
-    public boolean existePorMatricula(String matricula) {
-        return repository.existsByMatriculaIgnoreCase(matricula.strip());
-    }
+    public Optional<Alumno> buscarPorMatricula(String matricula) {return repository.findByMatriculaIgnoreCase(matricula.strip()).map(AlumnoEntity::toDomain);}
+
+    @Override
+    public boolean existePorMatricula(String matricula) {return repository.existsByMatriculaIgnoreCase(matricula.strip());}
 
     @Override
     @Transactional
-    public void eliminarPorId(Long id) {
-        repository.deleteById(id);
-    }
+    public void eliminarPorId(Long id) {repository.deleteById(id);}
 }

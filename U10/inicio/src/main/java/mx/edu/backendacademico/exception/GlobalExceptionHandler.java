@@ -16,23 +16,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(AlumnoNoEncontradoException.class)
-    ProblemDetail noEncontrado(AlumnoNoEncontradoException ex) {
-        return problema(HttpStatus.NOT_FOUND, "ALUMNO_NO_ENCONTRADO", ex.getMessage());
-    }
+    ProblemDetail noEncontrado(AlumnoNoEncontradoException ex) {return problema(HttpStatus.NOT_FOUND, "ALUMNO_NO_ENCONTRADO", ex.getMessage());}
+
+    @ExceptionHandler(AccesoExpedienteDenegadoException.class)
+    ProblemDetail accesoDenegado(AccesoExpedienteDenegadoException ex) {return problema(HttpStatus.FORBIDDEN, "ACCESO_EXPEDIENTE_DENEGADO", ex.getMessage());}
 
     @ExceptionHandler(MatriculaDuplicadaException.class)
-    ProblemDetail conflicto(MatriculaDuplicadaException ex) {
-        return problema(HttpStatus.CONFLICT, "MATRICULA_DUPLICADA", ex.getMessage());
-    }
-
+    ProblemDetail conflicto(MatriculaDuplicadaException ex) {return problema(HttpStatus.CONFLICT, "MATRICULA_DUPLICADA", ex.getMessage());}
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex, HttpHeaders headers,
-            HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         var detalle = problema(HttpStatus.BAD_REQUEST, "DATOS_INVALIDOS", "Revisa los campos indicados");
-        // Conserva varios errores de un campo sin publicar el valor rechazado.
-        List<CampoInvalido> campos = ex.getBindingResult().getFieldErrors().stream()
-            .map(e -> new CampoInvalido(e.getField(), e.getDefaultMessage())).toList();
+        List<CampoInvalido> campos = ex.getBindingResult().getFieldErrors().stream().map(e -> new CampoInvalido(e.getField(), e.getDefaultMessage())).toList();
         detalle.setProperty("campos", campos);
         return handleExceptionInternal(ex, detalle, headers, status, request);
     }
@@ -43,10 +37,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         while (causa != null) {
             if (causa instanceof org.hibernate.exception.ConstraintViolationException restriccion) {
                 String nombre = restriccion.getConstraintName();
-                if ("fk_inscripcion_alumno".equalsIgnoreCase(nombre) ||
-                    "fk_inscripcion_materia".equalsIgnoreCase(nombre)) {
-                    return problema(HttpStatus.CONFLICT, "RECURSO_REFERENCIADO",
-                        "El recurso participa en una inscripción y no puede eliminarse");
+                if ("fk_inscripcion_alumno".equalsIgnoreCase(nombre) || "fk_inscripcion_materia".equalsIgnoreCase(nombre)) {
+                    return problema(HttpStatus.CONFLICT, "RECURSO_REFERENCIADO", "El recurso participa en una inscripción y no puede eliminarse");
                 }
             }
             causa = causa.getCause();
@@ -56,15 +48,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(OperacionAcademicaException.class)
     ProblemDetail academica(OperacionAcademicaException ex) {
-        var status = ex.getCodigo().equals("MATERIA_NO_ENCONTRADA")
-            ? HttpStatus.NOT_FOUND : HttpStatus.CONFLICT;
+        var status = ex.getCodigo().equals("MATERIA_NO_ENCONTRADA") ? HttpStatus.NOT_FOUND : HttpStatus.CONFLICT;
         return problema(status, ex.getCodigo(), ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     ProblemDetail inesperado(Exception ex) {
         String referencia = UUID.randomUUID().toString();
-        // Registra una referencia y el tipo, sin cuerpo HTTP, contraseñas ni tokens.
         log.error("Falla no prevista referencia={} tipo={}", referencia, ex.getClass().getName());
         var detalle = problema(HttpStatus.INTERNAL_SERVER_ERROR, "ERROR_INTERNO", "No fue posible completar la operación");
         detalle.setProperty("referencia", referencia);
