@@ -14,6 +14,7 @@ POST http://localhost:8080/api/v1/alumnos
 Authorization: Basic docente docente123
 X-CSRF-TOKEN: {{csrf}}
 Content-Type: application/json
+Idempotency-Key: unidad11-prueba-alumno-001
 
 {"matricula":"A001","nombre":"Ada Lovelace","correo":"ada@u.mx"}
 

@@ -3,6 +3,8 @@ package mx.edu.backendacademico.exception;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
+import mx.edu.backendacademico.exception.ClaveIdempotenciaInvalidaException;
+import mx.edu.backendacademico.exception.ClaveIdempotenciaReutilizadaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -59,6 +61,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         var status = ex.getCodigo().equals("MATERIA_NO_ENCONTRADA")
             ? HttpStatus.NOT_FOUND : HttpStatus.CONFLICT;
         return problema(status, ex.getCodigo(), ex.getMessage());
+    }
+
+    @ExceptionHandler(ClaveIdempotenciaReutilizadaException.class)
+    ProblemDetail claveReutilizada(ClaveIdempotenciaReutilizadaException ex) {
+        return problema(HttpStatus.CONFLICT, "CLAVE_IDEMPOTENCIA_REUTILIZADA", ex.getMessage());
+    }
+
+    @ExceptionHandler(ClaveIdempotenciaInvalidaException.class)
+    ProblemDetail claveInvalida(ClaveIdempotenciaInvalidaException ex) {
+        return problema(HttpStatus.BAD_REQUEST, "CLAVE_IDEMPOTENCIA_INVALIDA", ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
