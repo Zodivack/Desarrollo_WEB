@@ -17,22 +17,16 @@ public class AlumnoRepositoryEnMemoria implements AlumnoRepository {
 
     @Override
     public synchronized Alumno guardar(Alumno alumno) {
-        // 1. Un mismo monitor protege comprobación y escritura como una operación.
-        boolean duplicado = datos.values().stream().anyMatch(actual ->
-            actual.matricula().equals(alumno.matricula()) &&
-            !actual.id().equals(alumno.id()));
-        if (duplicado) throw new MatriculaDuplicadaException(alumno.matricula());
-        // 2. El incremento comparte el monitor; no necesita un AtomicLong adicional.
+        boolean duplicado = datos.values().stream().anyMatch(actual -> actual.matricula().equals(alumno.matricula()) && !actual.id().equals(alumno.id()));
+        if (duplicado) {throw new MatriculaDuplicadaException(alumno.matricula());}
         long id = alumno.id() == null ? ++secuencia : alumno.id();
-        var guardado = new Alumno(id, alumno.matricula(), alumno.nombre(),
-                                  alumno.correo(), alumno.estatus());
+        var guardado = new Alumno(id, alumno.matricula(), alumno.nombre(), alumno.correo(), alumno.estatus(), alumno.propietario());
         datos.put(id, guardado);
         return guardado;
     }
 
     @Override
     public synchronized List<Alumno> buscarTodos() {
-        // Copia estable: no se expone la colección mutable que vive en el bean.
         return List.copyOf(datos.values());
     }
 

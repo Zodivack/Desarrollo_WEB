@@ -22,7 +22,10 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                 .requestMatchers("/actuator/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/csrf").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/v1/alumnos/**").hasAnyRole("ALUMNO", "DOCENTE", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/v1/alumnos")
+                .hasAnyRole("DOCENTE", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/v1/alumnos/*")
+                .hasAnyRole("ALUMNO", "DOCENTE", "ADMIN")
                 .requestMatchers("/api/v1/**").hasAnyRole("DOCENTE", "ADMIN")
                 .anyRequest().denyAll());
         http.httpBasic(withDefaults());
@@ -31,12 +34,13 @@ public class SecurityConfig {
 
     @Bean
     PasswordEncoder passwordEncoder() {return PasswordEncoderFactories.createDelegatingPasswordEncoder();}
-
     @Bean
     UserDetailsService users(PasswordEncoder encoder) {
         return new InMemoryUserDetailsManager(
                 User.withUsername("alumno").password(encoder.encode("alumno123")).roles("ALUMNO").build(),
+                User.withUsername("alumno2").password(encoder.encode("alumno2123")).roles("ALUMNO").build(),
                 User.withUsername("docente").password(encoder.encode("docente123")).roles("DOCENTE").build(),
-                User.withUsername("admin").password(encoder.encode("admin123")).roles("ADMIN").build());
+                User.withUsername("admin").password(encoder.encode("admin123")).roles("ADMIN").build()
+        );
     }
 }

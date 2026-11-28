@@ -1,0 +1,23 @@
+﻿
+app-1  | 2026-11-28T01:49:10.418Z DEBUG 1 --- [backend-academico] [nio-8080-exec-4] org.hibernate.SQL                        : select ae1_0.id from alumnos ae1_0 where 
+upper(ae1_0.matricula)=upper(?) fetch first ? rows only
+app-1  | 2026-11-28T01:49:10.546Z DEBUG 1 --- [backend-academico] [nio-8080-exec-5] org.hibernate.SQL                        : select ae1_0.id from alumnos ae1_0 where 
+upper(ae1_0.matricula)=upper(?) fetch first ? rows only
+app-1  | 2026-11-28T01:49:10.795Z DEBUG 1 --- [backend-academico] [nio-8080-exec-8] org.hibernate.SQL                        : select ae1_0.id from alumnos ae1_0 where 
+upper(ae1_0.matricula)=upper(?) fetch first ? rows only
+app-1  | 2026-11-28T01:49:10.869Z DEBUG 1 --- [backend-academico] [nio-8080-exec-9] org.hibernate.SQL                        : select 
+ae1_0.id,ae1_0.correo,ae1_0.estatus,ae1_0.matricula,ae1_0.nombre,ae1_0.propietario from alumnos ae1_0
+app-1  | 2026-11-28T01:49:11.043Z DEBUG 1 --- [backend-academico] [nio-8080-exec-1] org.hibernate.SQL                        : select 
+ae1_0.id,ae1_0.correo,ae1_0.estatus,ae1_0.matricula,ae1_0.nombre,ae1_0.propietario from alumnos ae1_0 where ae1_0.id=?
+app-1  | 2026-11-28T01:49:11.190Z DEBUG 1 --- [backend-academico] [nio-8080-exec-3] org.hibernate.SQL                        : select 
+ae1_0.id,ae1_0.correo,ae1_0.estatus,ae1_0.matricula,ae1_0.nombre,ae1_0.propietario from alumnos ae1_0 where ae1_0.id=?
+app-1  | 2026-11-28T01:49:11.253Z DEBUG 1 --- [backend-academico] [nio-8080-exec-4] org.hibernate.SQL                        : select 
+ae1_0.id,ae1_0.correo,ae1_0.estatus,ae1_0.matricula,ae1_0.nombre,ae1_0.propietario from alumnos ae1_0 where ae1_0.id=?
+app-1  | 2026-11-28T01:49:11.399Z DEBUG 1 --- [backend-academico] [nio-8080-exec-6] org.hibernate.SQL                        : select 
+ae1_0.id,ae1_0.correo,ae1_0.estatus,ae1_0.matricula,ae1_0.nombre,ae1_0.propietario from alumnos ae1_0 where ae1_0.id=?
+app-1  | 2026-11-28T01:49:11.462Z DEBUG 1 --- [backend-academico] [nio-8080-exec-7] org.hibernate.SQL                        : select 
+ae1_0.id,ae1_0.correo,ae1_0.estatus,ae1_0.matricula,ae1_0.nombre,ae1_0.propietario from alumnos ae1_0 where ae1_0.id=?
+app-1  | 2026-11-28T01:49:11.536Z DEBUG 1 --- [backend-academico] [nio-8080-exec-8] org.hibernate.SQL                        : select 
+ae1_0.id,ae1_0.correo,ae1_0.estatus,ae1_0.matricula,ae1_0.nombre,ae1_0.propietario from alumnos ae1_0 where ae1_0.id=?
+
+

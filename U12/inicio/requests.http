@@ -1,54 +1,98 @@
-# Cuentas conocidas de laboratorio. Mantén las cookies habilitadas en HTTP Client.
-# 1. Ejecuta GET /csrf como docente. 2. Copia token a csrf. 3. Conserva JSESSIONID.
-@csrf = vf113tccXh1OZ5rDWv2NHs6jkUEeIBVkbMtGcnMkUFU7CcBA2MxD6rEpZyRjVK32OdC5LfuUvCMsGCFJVfokQEAUMjcOMPRx
+# U12 - Reto de entrega reproducible
+# Conserva las cookies de sesión en HTTP Client.
+# Primero ejecuta GET /api/v1/csrf y copia el token recibido en @csrf.
 
-### Saludo público
-GET http://localhost:8080/api/v1/saludo
+@baseUrl = http://localhost:8080
+@csrf = REEMPLAZA_POR_EL_TOKEN_ACTUAL
 
-### Autenticación y obtención del token
-GET http://localhost:8080/api/v1/csrf
+### 01. Salud pública
+GET {{baseUrl}}/actuator/health
+
+### 02. Liveness
+GET {{baseUrl}}/actuator/health/liveness
+
+### 03. Readiness: incluye PostgreSQL
+GET {{baseUrl}}/actuator/health/readiness
+
+### 04. Obtener token CSRF con la sesión de docente
+GET {{baseUrl}}/api/v1/csrf
 Authorization: Basic docente docente123
 
-### Crear con credenciales y token de la misma sesión
-POST http://localhost:8080/api/v1/alumnos
+### 05. Crear alumno cuyo propietario será alumno
+POST {{baseUrl}}/api/v1/alumnos
 Authorization: Basic docente docente123
 X-CSRF-TOKEN: {{csrf}}
 Content-Type: application/json
 
-{"matricula":"U12-271126","nombre":"Ada Lovelace","correo":"ada@u.mx"}
+{"matricula": "U12-RETO-A1", "nombre": "Ada Lovelace", "correo": "ada.reto@u.mx", "propietario": "alumno"}
 
-### Consultar con rol de lectura
-GET http://localhost:8080/api/v1/alumnos
+### 06. Crear alumno cuyo propietario será alumno2
+POST {{baseUrl}}/api/v1/alumnos
+Authorization: Basic docente docente123
+X-CSRF-TOKEN: {{csrf}}
+Content-Type: application/json
+
+{"matricula": "U12-RETO-A2", "nombre": "Emmy Noether", "correo": "emmy.reto@u.mx", "propietario": "alumno2"}
+
+### 07. Validación: nombre demasiado corto. Esperado 400.
+POST {{baseUrl}}/api/v1/alumnos
+Authorization: Basic docente docente123
+X-CSRF-TOKEN: {{csrf}}
+Content-Type: application/json
+
+{"matricula": "U12-RETO-400", "nombre": "Ad", "correo": "ada@u.mx", "propietario": "alumno"}
+
+### 08. Propietario inválido. Esperado 400.
+POST {{baseUrl}}/api/v1/alumnos
+Authorization: Basic docente docente123
+X-CSRF-TOKEN: {{csrf}}
+Content-Type: application/json
+
+{"matricula": "U12-RETO-401", "nombre": "Grace Hopper", "correo": "grace@u.mx", "propietario": "docente"}
+
+### 09. Matrícula duplicada. Usa la misma matrícula de la petición 05. Esperado 409.
+POST {{baseUrl}}/api/v1/alumnos
+Authorization: Basic docente docente123
+X-CSRF-TOKEN: {{csrf}}
+Content-Type: application/json
+
+{"matricula": "U12-RETO-A1", "nombre": "Ada Lovelace duplicada", "correo": "ada.duplicada@u.mx", "propietario": "alumno"}
+
+### 10. Docente puede consultar el listado completo
+GET {{baseUrl}}/api/v1/alumnos
+Authorization: Basic docente docente123
+
+### 11. Alumno no puede consultar el listado completo. Esperado 403.
+GET {{baseUrl}}/api/v1/alumnos
 Authorization: Basic alumno alumno123
 
-### Sustituir nombre y correo; repite para observar el mismo estado editable
-PUT http://localhost:8080/api/v1/alumnos/19
+### 12. Alumno consulta su propio registro. Sustituye el ID de la petición 05.
+GET {{baseUrl}}/api/v1/alumnos/ID_ALUMNO
+Authorization: Basic alumno alumno123
+
+### 13. Alumno intenta consultar el registro de alumno2. Esperado 404.
+GET {{baseUrl}}/api/v1/alumnos/ID_ALUMNO2
+Authorization: Basic alumno alumno123
+
+### 14. Alumno2 consulta su propio registro. Sustituye el ID de la petición 06.
+GET {{baseUrl}}/api/v1/alumnos/ID_ALUMNO2
+Authorization: Basic alumno2 alumno2123
+
+### 15. Docente consulta el registro de alumno2
+GET {{baseUrl}}/api/v1/alumnos/ID_ALUMNO2
 Authorization: Basic docente docente123
-X-CSRF-TOKEN: {{csrf}}
-Content-Type: application/json
 
-{"nombre":"Ada Byron","correo":"ada.byron@u.mx"}
-
-### Crear inscripción después de sustituir el id real del alumno
-POST http://localhost:8080/api/v1/inscripciones?alumnoId=1&materiaId=1
-Authorization: Basic docente docente123
-X-CSRF-TOKEN: {{csrf}}
-
-### Historial
-GET http://localhost:8080/api/v1/inscripciones/alumno/1?page=0&size=5&sort=fecha
+### 16. Identificador inexistente. Esperado 404.
+GET {{baseUrl}}/api/v1/alumnos/99999999
 Authorization: Basic docente docente123
 
-### Ejecuta sólo para un alumno sin inscripciones, con su id real
-DELETE http://localhost:8080/api/v1/alumnos/2
-Authorization: Basic docente docente123
-X-CSRF-TOKEN: {{csrf}}
+### 17. Métricas sin credenciales. Esperado 401.
+GET {{baseUrl}}/actuator/metrics
 
-### Salud pública sin detalles internos
-GET http://localhost:8080/actuator/health
+### 18. Métricas con rol ALUMNO. Esperado 403.
+GET {{baseUrl}}/actuator/metrics
+Authorization: Basic alumno alumno123
 
-### Readiness comprueba también PostgreSQL
-GET http://localhost:8080/actuator/health/readiness
-
-### Métricas reservadas a ADMIN
-GET http://localhost:8080/actuator/metrics
+### 19. Métricas con ADMIN. Esperado 200.
+GET {{baseUrl}}/actuator/metrics
 Authorization: Basic admin admin123

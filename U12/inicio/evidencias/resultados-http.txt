@@ -1,0 +1,25 @@
+﻿Comprobacion del reto U12 - 2026-11-27 20:06:07
+Salud general | Esperado: 200 | Obtenido: 200 | OK
+Readiness inicial | Esperado: 200 | Obtenido: 200 | OK
+Crear alumno propietario alumno | Esperado: 201 | Obtenido: 201 | OK
+Crear alumno propietario alumno2 | Esperado: 201 | Obtenido: 201 | OK
+Validacion de nombre demasiado corto | Esperado: 400 | Obtenido: 400 | OK
+Propietario sin rol ALUMNO | Esperado: 400 | Obtenido: 400 | OK
+Matricula duplicada | Esperado: 409 | Obtenido: 409 | OK
+Docente lista todos los alumnos | Esperado: 200 | Obtenido: 200 | OK
+Alumno no puede listar todos | Esperado: 403 | Obtenido: 403 | OK
+Alumno consulta su registro | Esperado: 200 | Obtenido: 200 | OK
+Alumno repite su consulta para comprobar cache | Esperado: 200 | Obtenido: 200 | OK
+Alumno intenta consultar registro ajeno | Esperado: 404 | Obtenido: 404 | OK
+Alumno2 consulta su registro | Esperado: 200 | Obtenido: 200 | OK
+Alumno2 repite su consulta para comprobar cache | Esperado: 200 | Obtenido: 200 | OK
+Alumno2 intenta consultar registro ajeno | Esperado: 404 | Obtenido: 404 | OK
+Docente consulta registro de alumno2 | Esperado: 200 | Obtenido: 200 | OK
+Alumno inexistente | Esperado: 404 | Obtenido: 404 | OK
+Metricas sin credenciales | Esperado: 401 | Obtenido: 401 | OK
+Metricas con rol ALUMNO | Esperado: 403 | Obtenido: 403 | OK
+Metricas con rol ADMIN | Esperado: 200 | Obtenido: 200 | OK
+Readiness con PostgreSQL detenido | Esperado: 503 | Obtenido: 503 | OK
+Liveness permanece UP con PostgreSQL detenido | Esperado: 200 | Obtenido: 200 | OK
+Readiness despues de recuperar PostgreSQL | Esperado: 200 | Obtenido: 200 | OK
+ID alumno=24; ID alumno2=25; matriculas=U12A-E8141912,U12B-E8141912

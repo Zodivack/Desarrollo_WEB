@@ -1,0 +1,10 @@
+﻿ id |   matricula   |    nombre    | propietario 
+----+---------------+--------------+-------------
+ 20 | U12A-49369B1E | Ada Lovelace | alumno
+ 21 | U12B-49369B1E | Emmy Noether | alumno2
+ 22 | U12A-2A4EBE6F | Ada Lovelace | alumno
+ 23 | U12B-2A4EBE6F | Emmy Noether | alumno2
+ 24 | U12A-E8141912 | Ada Lovelace | alumno
+ 25 | U12B-E8141912 | Emmy Noether | alumno2
+(6 rows)
+

@@ -1,0 +1,7 @@
+﻿ version |          description           | success 
+---------+--------------------------------+---------
+ 1       | crear alumnos                  | t
+ 2       | crear materias e inscripciones | t
+ 3       | agregar propietario alumnos    | t
+(3 rows)
+

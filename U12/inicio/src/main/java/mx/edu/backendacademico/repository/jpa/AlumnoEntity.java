@@ -1,7 +1,6 @@
 package mx.edu.backendacademico.repository.jpa;
 
-// Relaciona la identidad del objeto administrado con una fila de alumnos.
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -22,12 +21,19 @@ public class AlumnoEntity {
     private String correo;
     @Enumerated(EnumType.STRING)
     private EstatusAlumno estatus;
+    @Column(nullable = false, length = 80)
+    private String propietario;
 
     protected AlumnoEntity() {}
     public AlumnoEntity(Alumno alumno) {
-        this.id = alumno.id(); this.matricula = alumno.matricula(); this.nombre = alumno.nombre();
-        this.correo = alumno.correo(); this.estatus = alumno.estatus();
+        this.id = alumno.id();
+        this.matricula = alumno.matricula();
+        this.nombre = alumno.nombre();
+        this.correo = alumno.correo();
+        this.estatus = alumno.estatus();
+        this.propietario = alumno.propietario();
     }
-    public Alumno toDomain() { return new Alumno(id, matricula, nombre, correo, estatus); }
-    public Long getId() { return id; }
+    public Alumno toDomain() {return new Alumno(id, matricula, nombre, correo, estatus, propietario);}
+
+    public Long getId() {return id;}
 }
